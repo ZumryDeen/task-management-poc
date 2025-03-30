@@ -1,1 +1,20 @@
-*.sqlite*
+# Laravel specific
+/vendor
+/node_modules
+/.env
+/public/storage
+/storage/*.key
+
+# Composer PHAR
+composer.phar
+
+# Laravel Mix
+/public/hot
+/public/mix-manifest.json
+
+# IDE files
+/.idea
+/.vscode
+
+# Logs
+*.log
