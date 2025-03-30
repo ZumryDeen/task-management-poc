@@ -9,7 +9,7 @@
 composer.phar
 
 # Laravel Mix
-/public/hot
+/public/hotgit s
 /public/mix-manifest.json
 
 # IDE files

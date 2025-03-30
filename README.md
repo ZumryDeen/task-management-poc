@@ -1,66 +1,167 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management POC
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a task management application built with Laravel. It allows users to manage tasks, upload files related to tasks, and perform basic CRUD operations. The application also integrates with an **S3 bucket** for storing files associated with tasks.
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+In this task management project, I primarily used the Repository Pattern to abstract data access for tasks, users, and files. This pattern helps separate the data layer from the business logic, ensuring cleaner code, centralized data handling, and easier testing. By keeping the data layers separate, it promotes maintainability and scalability, making future changes (like switching databases) simpler. Additionally, the Service Layer Pattern was used for the file uploading process. This allows for easy scalability—if the file upload functionality needs to be moved to GCP or another server in the future, we can scale the uploading service. Furthermore, this design enables the possibility of creating a dedicated microservice to handle file uploads, ensuring full scalability as the system grows.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP >= 8.2
+- Composer
+- Git
+- MySQL 
+- Laravel 12.x
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Setup Guide
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Step 1: Clone the Repository
 
-## Laravel Sponsors
+Clone the repository to your local machine:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/ZumryDeen/task-management-poc.git
+cd task-management-poc
+```
 
-### Premium Partners
+## Step 2: Install PHP Dependencies
+```bash
+composer install
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Step 3: Set Up Environment Variables
+```bash
+cp .env.example .env
+```
+Open the .env file and set your environment variables, especially the database connection details (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD), and the S3 bucket configuration for file storage.
 
-## Contributing
+## Step 4: Generate Application Key
+```bash
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Step 5: Migrate the Database and Seed the Demo User
+Run the database migrations to create the necessary tables and seed the demo user for testing authentication:
+```bash
+php artisan migrate --seed
+```
+The --seed flag will run the database seeder, which will populate your database with the demo user data. The demo user will have the following credentials:
 
-## Code of Conduct
+Email: demo@innodata.com
+Password: 1234
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+You can use these credentials to authenticate and test the application.
 
-## Security Vulnerabilities
+## Step 6: Start Laravel Development Server:
+Run the following command to start the development server:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan serve
+```
 
-## License
+## Step 7: SRun the Queue Worker:
+Since file uploads are handled asynchronously using Laravel's queue jobs, you need to start the queue worker to process the jobs (such as uploading files to S3):
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan queue:work
+```
+## Step 8: Running the test
+```bash
+php artisan test  
+```
+
+
+## How to test the REST application
+
+1. Run the Seeder
+   To populate the database with the demo user and any other necessary data, run the following command:
+
+```bash
+php artisan migrate --seed
+```
+This will:
+
+Run all migrations to set up the necessary tables.
+
+Run the database seeder to create the demo user with the following credentials:
+
+Email: demo@innodata.com
+
+Password: 1234
+
+### 2. Get Authentication Token
+   Now that you have the demo user, you need to authenticate and get an Auth Token.
+
+Run the following curl command to log in with the demo user credentials:
+
+```bash
+curl --location 'http://127.0.0.1:8000/api/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+"email": "demo@innodata.com",
+"password": "1234"
+}'
+```
+This will return a response with an auth token that looks like this:
+
+```bash
+{
+"token": "7|4w38CjktUS4As5TCXEZAEmrk6nOU8oLxjoIcDG55b4e37f42"
+}
+```
+Copy the token from the response; you'll need it for the next steps.
+
+curl --location 'http://127.0.0.1:8000/api/tasks' \
+--header 'Authorization: Bearer 4|n8OI84FiTTnRzRcbL6XBkDFYkAOzGBGPGwGwrgZH7c613a13'
+
+
+1. Create Task with File Upload (POST request):
+
+```bash
+curl --location --request POST 'http://127.0.0.1:8000/api/tasks' \
+--header 'Authorization: Bearer <YOUR_TOKEN>' \
+--header 'Accept: application/json' \
+--form 'name="New Task Name"' \
+--form 'description="New task description."' \
+--form 'status="pending"' \
+--form 'files[]=@"/path/to/file"'
+```
+
+
+2. Update Task (PUT request):
+
+```bash
+curl --location --request PUT 'http://127.0.0.1:8000/api/tasks/1' \
+--header 'Authorization: Bearer <YOUR_TOKEN>' \
+--header 'Accept: application/json' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'name=Updated Task Name' \
+--data-urlencode 'description=Updated task description.' \
+--data-urlencode 'status=in-progress'
+```
+3. Get Task (GET request):
+
+```bash
+curl --location --request GET 'http://127.0.0.1:8000/api/tasks/1' \
+--header 'Authorization: Bearer <YOUR_TOKEN>' \
+--header 'Accept: application/json'
+```
+4 List Task (GET request):
+```bash
+curl --location --request GET 'http://127.0.0.1:8000/api/tasks' \
+--header 'Authorization: Bearer <YOUR_TOKEN>' \
+--header 'Accept: application/json'
+```
+
+5 .Delete Task (DELETE request):
+
+```bash
+curl --location --request DELETE 'http://127.0.0.1:8000/api/tasks/3' \
+--header 'Authorization: Bearer <YOUR_TOKEN>' \
+--header 'Accept: application/json'
+```
+
+
+
